@@ -1,0 +1,106 @@
+WITH
+	rainy_dates
+AS(
+    -- A simple query to get the averages of lat and long on a city level.
+    SELECT	 
+		Date(start_date), 
+		duration
+	FROM
+        trips		      
+)
+SELECT 
+	rainy_dates.duration, 
+	weather.date
+FROM 
+	weather
+JOIN
+	rainy_dates
+ON
+	rainy_dates.date = Date(weather.date)
+WHERE 
+	events = 'Rain'
+GROUP BY 1, 2
+ORDER BY duration DESC
+LIMIT 3
+
+
+--Which station is full most often?
+WITH full_count
+AS(
+	SELECT	
+		docks_available,
+		station_id,
+		count(*)
+	FROM 
+		status
+	WHERE 
+		docks_available = 0
+	GROUP BY 1, 2
+)
+SELECT 
+	
+	stations.name,
+	full_count.count
+FROM 
+	stations
+JOIN 
+	full_count
+ON 
+	stations.station_id = full_count.station_id
+ORDER BY full_count.count desc
+limit 1
+
+
+-- Return a list of stations with a count of number of trips starting 
+-- at that station but ordered by dock count.
+
+WITH 
+	trip_count
+AS(
+	SELECT 
+		start_station,
+		count(*)
+	FROM 
+		trips
+	GROUP BY 1
+)
+SELECT 
+	--stations.dockcount,
+	trip_count.start_station,
+	trip_count.count
+FROM
+	stations
+JOIN 
+	trip_count
+ON
+	trip_count.start_station = stations.name
+ORDER BY dockcount desc
+
+--(Challenge) What's the length of the longest trip for each day it rains
+--anywhere?
+
+WITH 
+	long_trip
+As(
+	SELECT 
+		DATE(start_date),
+		MAX(duration)
+	FROM 
+		trips
+	GROUP By 1
+)
+SELECT
+	weather.events,
+	long_trip.max,
+	weather.date
+FROM 
+	weather
+	
+JOIN
+	long_trip 
+ON
+	long_trip.date = Date(weather.date)
+WHERE 
+	events = 'Rain'
+GROUP BY 1, 2, 3
+ORDER BY max DESC
