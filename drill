@@ -1,0 +1,59 @@
+-- What's the most expensive listing? What else can you tell 
+-- -me about the listing?
+
+	
+SELECT
+	* 
+FROM 
+	sfo_listings
+ORDER BY price desc
+limit 1
+
+
+-- What neighborhoods seem to be the most popular?
+
+SELECT 
+	neighbourhood,
+	count(*)
+FROM
+	sfo_listings
+GROUP BY 1
+ORDER BY count desc
+
+
+-- What time of year is the cheapest time to go to San Francisco? 
+-- - What about the busiest?
+
+
+select
+	extract(month from calender_date),
+	AVG(price::money::NUMERIC)		
+from 
+	sfo_calendar
+
+where
+	available = 't'
+GROUP BY 1
+ORDER BY avg desc
+
+-- busiest 
+select
+	extract(month from calender_date),
+	available,
+	count(*)
+from 
+	sfo_calendar
+where
+	available = 't'
+GROUP BY 1, 2
+order by count desc
+-- count of reviews per month
+select
+	extract(month from review_date),
+	count(*)
+from 
+	sfo_reviews
+	
+GROUP BY 1
+order by count desc
+limit 10000
