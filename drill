@@ -25,35 +25,35 @@ ORDER BY count desc
 -- - What about the busiest?
 
 
-select
+SELECT
 	extract(month from calender_date),
 	AVG(price::money::NUMERIC)		
-from 
+FROM 
 	sfo_calendar
 
-where
+WHERE
 	available = 't'
 GROUP BY 1
 ORDER BY avg desc
 
 -- busiest 
-select
+SELECT
 	extract(month from calender_date),
 	available,
 	count(*)
-from 
+FROM 
 	sfo_calendar
-where
+WHERE
 	available = 't'
 GROUP BY 1, 2
-order by count desc
+ORDER BY count desc
 -- count of reviews per month
-select
+SELECT
 	extract(month from review_date),
 	count(*)
-from 
+FROM
 	sfo_reviews
 	
 GROUP BY 1
-order by count desc
-limit 10000
+ORDER BY count desc
+
